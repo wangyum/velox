@@ -119,12 +119,12 @@ function install_fmt {
 
 function install_folly {
   wget_and_untar https://github.com/facebook/folly/archive/refs/tags/${FB_OS_VERSION}.tar.gz folly
-  cmake_install_dir folly -DBUILD_TESTS=OFF -DBUILD_SHARED_LIBS="$VELOX_BUILD_SHARED" -DFOLLY_HAVE_INT128_T=ON
+  cmake_install_dir folly -DBUILD_TESTS=OFF -DBUILD_SHARED_LIBS="$VELOX_BUILD_SHARED" -DFOLLY_HAVE_INT128_T=ON -DCMAKE_POLICY_VERSION_MINIMUM=3.5
 }
 
 function install_fizz {
   wget_and_untar https://github.com/facebookincubator/fizz/archive/refs/tags/${FB_OS_VERSION}.tar.gz fizz
-  cmake_install_dir fizz/fizz -DBUILD_TESTS=OFF
+  cmake_install_dir fizz/fizz -DBUILD_TESTS=OFF -DCMAKE_POLICY_VERSION_MINIMUM=3.5
 }
 
 function install_wangle {
@@ -139,17 +139,17 @@ function install_mvfst {
 
 function install_fbthrift {
   wget_and_untar https://github.com/facebook/fbthrift/archive/refs/tags/${FB_OS_VERSION}.tar.gz fbthrift
-  cmake_install_dir fbthrift -Denable_tests=OFF -DBUILD_TESTS=OFF -DBUILD_SHARED_LIBS=OFF
+  cmake_install_dir fbthrift -Denable_tests=OFF -DBUILD_TESTS=OFF -DBUILD_SHARED_LIBS=OFF -DCMAKE_POLICY_VERSION_MINIMUM=3.5
 }
 
 function install_double_conversion {
   wget_and_untar https://github.com/google/double-conversion/archive/refs/tags/v3.1.5.tar.gz double-conversion
-  cmake_install_dir double-conversion -DBUILD_TESTING=OFF
+  cmake_install_dir double-conversion -DBUILD_TESTING=OFF -DCMAKE_POLICY_VERSION_MINIMUM=3.5
 }
 
 function install_ranges_v3 {
   wget_and_untar https://github.com/ericniebler/range-v3/archive/refs/tags/0.12.0.tar.gz ranges_v3
-  cmake_install_dir ranges_v3 -DRANGES_ENABLE_WERROR=OFF -DRANGE_V3_TESTS=OFF -DRANGE_V3_EXAMPLES=OFF
+  cmake_install_dir ranges_v3 -DRANGES_ENABLE_WERROR=OFF -DRANGE_V3_TESTS=OFF -DRANGE_V3_EXAMPLES=OFF -DCMAKE_POLICY_VERSION_MINIMUM=3.5
 }
 
 function install_re2 {
@@ -163,7 +163,7 @@ function install_duckdb {
     wget_and_untar https://github.com/duckdb/duckdb/archive/refs/tags/${DUCKDB_VERSION}.tar.gz duckdb
     # The warning -Wno-missing-template-arg-list-after-template-kw can likely be removed when upgrading to
     # the latest duckDB version. This code has changed quite significantly and likely isn't a problem anymore.
-    cmake_install_dir duckdb -DBUILD_UNITTESTS=OFF -DENABLE_SANITIZER=OFF -DENABLE_UBSAN=OFF -DBUILD_SHELL=OFF -DEXPORT_DLL_SYMBOLS=OFF -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-Wno-missing-template-arg-list-after-template-kw"
+    cmake_install_dir duckdb -DBUILD_UNITTESTS=OFF -DENABLE_SANITIZER=OFF -DENABLE_UBSAN=OFF -DBUILD_SHELL=OFF -DEXPORT_DLL_SYMBOLS=OFF -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-Wno-missing-template-arg-list-after-template-kw" -DCMAKE_POLICY_VERSION_MINIMUM=3.5
   fi
 }
 
@@ -181,7 +181,7 @@ function install_stemmer {
 function install_geos {
   if [[ "$BUILD_GEOS" == "true" ]]; then
     wget_and_untar https://github.com/libgeos/geos/archive/${GEOS_VERSION}.tar.gz geos
-    cmake_install_dir geos -DBUILD_TESTING=OFF
+    cmake_install_dir geos -DBUILD_TESTING=OFF -DCMAKE_POLICY_VERSION_MINIMUM=3.5
   fi
 }
 
