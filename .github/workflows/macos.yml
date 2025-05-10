@@ -35,7 +35,8 @@ jobs:
       matrix:
         # macos-13 = x86_64 Mac
         # macos-14 = arm64 Mac
-        os: [macos-14]
+        # macos-15 = arm64 Mac and cmake 4.0
+        os: [macos-13, macos-14, macos-15]
     runs-on: ${{ matrix.os }}
     env:
       CCACHE_DIR: '${{ github.workspace }}/ccache'
@@ -58,6 +59,20 @@ jobs:
           install_double_conversion
 
           echo "NJOBS=`sysctl -n hw.ncpu`" >> $GITHUB_ENV
+          OS_VERSION=$(sw_vers -productVersion | awk -F '.' '{print $1')
+          if [[ "$OS_VERSION" != "15" ]]; then
+            brew unlink protobuf || echo "protobuf not installed"
+            brew link --force protobuf@21
+            brew uninstall cmake
+            pipx install --force cmake==3.31
+          else
+            # Make sure cmake version is 4
+            CMAKE_VERSION=$(cmake --version | head -n 1 | awk '{print $3}' | awk -F '.' '{print $1}')
+            if [[ "$CMAKE_VERSION" == "4" ]]; then
+              echo "CMake version 4 is not allowed."
+              exit 1
+            fi
+          fi
 
       - name: Cache ccache
         uses: assignUser/stash/restore@v1
