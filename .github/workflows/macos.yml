@@ -59,7 +59,7 @@ jobs:
           install_double_conversion
 
           echo "NJOBS=`sysctl -n hw.ncpu`" >> $GITHUB_ENV
-          OS_VERSION=$(sw_vers -productVersion | awk -F '.' '{print $1')
+          OS_VERSION=$(sw_vers -productVersion | awk -F '.' '{print $1}')
           if [[ "$OS_VERSION" != "15" ]]; then
             brew unlink protobuf || echo "protobuf not installed"
             brew link --force protobuf@21
