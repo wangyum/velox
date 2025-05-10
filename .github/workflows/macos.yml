@@ -28,7 +28,7 @@ concurrency:
 
 jobs:
   macos-build:
-    if: ${{ github.repository == 'facebookincubator/velox' }}
+    if: ${{ github.repository == 'wangyum/velox' }}
     name: "${{ matrix.os }}"
     strategy:
       fail-fast: false
