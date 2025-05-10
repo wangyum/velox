@@ -35,7 +35,7 @@ jobs:
       matrix:
         # macos-13 = x86_64 Mac
         # macos-14 = arm64 Mac
-        os: [macos-13, macos-14]
+        os: [macos-14]
     runs-on: ${{ matrix.os }}
     env:
       CCACHE_DIR: '${{ github.workspace }}/ccache'
