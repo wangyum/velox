@@ -36,7 +36,7 @@ jobs:
         # macos-13 = x86_64 Mac
         # macos-14 = arm64 Mac
         # macos-15 = arm64 Mac and cmake 4.0
-        os: [macos-13, macos-14]
+        os: [macos-13, macos-14, macos-15]
     runs-on: ${{ matrix.os }}
     env:
       CCACHE_DIR: '${{ github.workspace }}/ccache'
@@ -60,7 +60,7 @@ jobs:
 
           echo "NJOBS=`sysctl -n hw.ncpu`" >> $GITHUB_ENV
           OS_VERSION=$(sw_vers -productVersion | awk -F '.' '{print $1}')
-          if [[ "$OS_VERSION" == "14" ]]; then
+          if [[ "$OS_VERSION" != "14" ]]; then
             # Make sure cmake version is 4
             CMAKE_VERSION=$(cmake --version | head -n 1 | awk '{print $3}' | awk -F '.' '{print $1}')
             if [[ "$CMAKE_VERSION" != "4" ]]; then
