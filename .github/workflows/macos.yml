@@ -57,12 +57,12 @@ jobs:
           echo "yumwang 1"
           install_build_prerequisites
           echo "yumwang 2"
-          install_velox_deps_from_brew
+          install_velox_deps
           echo "yumwang 3"
-          install_double_conversion
+          // install_double_conversion
           echo "yumwang 3"
-          install_boost
-          install_folly
+          // install_boost
+          // install_folly
           echo "yumwang 4"
 
           echo "NJOBS=`sysctl -n hw.ncpu`" >> $GITHUB_ENV
