@@ -61,6 +61,7 @@ jobs:
           echo "yumwang 3"
           install_double_conversion
           echo "yumwang 3"
+          install_boost
           install_folly
           echo "yumwang 4"
 
