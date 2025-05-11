@@ -119,6 +119,9 @@ function install_fmt {
 
 function install_folly {
   wget_and_untar https://github.com/facebook/folly/archive/refs/tags/${FB_OS_VERSION}.tar.gz folly
+  echo "Applying patch to folly=============================="
+  pwd
+  cd ${DEPENDENCY_DIR}/folly && git apply ../../scripts/patch-folly_io_Cursor.patch && cd -
   cmake_install_dir folly -DBUILD_TESTS=OFF -DBUILD_SHARED_LIBS="$VELOX_BUILD_SHARED" -DFOLLY_HAVE_INT128_T=ON -DCMAKE_POLICY_VERSION_MINIMUM=3.5
 }
 
