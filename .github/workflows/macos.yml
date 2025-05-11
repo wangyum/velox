@@ -61,7 +61,7 @@ jobs:
           echo "NJOBS=`sysctl -n hw.ncpu`" >> $GITHUB_ENV
           brew unlink protobuf || echo "protobuf not installed"
           brew link --force protobuf@21
-          if [[ $(sw_vers -productVersion | awk -F '.' '{print $1}') == "15" ]]; then
+          if [[ $(sw_vers -productVersion | awk -F '.' '{print $1}') == "16" ]]; then
             # Make sure cmake version is 4
             if [[ $(cmake --version | awk -F '[ .]' 'NR==1 {print $3}') != "4" ]]; then
               echo "CMake version 4 is not allowed."
