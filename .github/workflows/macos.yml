@@ -16,8 +16,24 @@ name: macOS Build
 
 on:
   push:
-    branches:
-      - 'mac-build'
+    paths:
+      - "velox/**"
+      - "!velox/docs/**"
+      - "CMakeLists.txt"
+      - "CMake/**"
+      - "third_party/**"
+      - "scripts/setup-macos.sh"
+      - ".github/workflows/macos.yml"
+
+  pull_request:
+    paths:
+      - "velox/**"
+      - "!velox/docs/**"
+      - "CMakeLists.txt"
+      - "CMake/**"
+      - "third_party/**"
+      - "scripts/setup-macos.sh"
+      - ".github/workflows/macos.yml"
 
 permissions:
   contents: read
@@ -28,14 +44,14 @@ concurrency:
 
 jobs:
   macos-build:
-    if: ${{ github.repository == 'wangyum/velox' }}
+    if: ${{ github.repository == 'facebookincubator/velox' }}
     name: "${{ matrix.os }}"
     strategy:
       fail-fast: false
       matrix:
         # macos-13 = x86_64 Mac
         # macos-14 = arm64 Mac
-        # macos-15 = arm64 Mac and cmake 4.0
+        # macos-15 = arm64 Mac and cmake 4
         os: [macos-13, macos-14, macos-15]
     runs-on: ${{ matrix.os }}
     env:
