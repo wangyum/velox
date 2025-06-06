@@ -74,11 +74,7 @@ jobs:
           install_double_conversion
 
           echo "NJOBS=`sysctl -n hw.ncpu`" >> $GITHUB_ENV
-          if [[ $(sw_vers -productVersion | awk -F '.' '{print $1}') != "15" ]]; then
-            brew link --force protobuf@21
-            brew uninstall cmake
-            pipx install --force cmake==3.31
-          fi
+          brew install googletest
 
       - name: Cache ccache
         uses: assignUser/stash/restore@v1
