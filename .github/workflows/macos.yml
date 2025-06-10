@@ -74,7 +74,8 @@ jobs:
           install_double_conversion
 
           echo "NJOBS=`sysctl -n hw.ncpu`" >> $GITHUB_ENV
-          if [[ $(sw_vers -productVersion | awk -F '.' '{print $1}') != "15" ]]; then
+          majorVersion = $(sw_vers -productVersion | awk -F '.' '{print $1}')
+          if [[ $(majorVersion) == "13" ||  $(majorVersion) == "14"]]; then
             brew uninstall cmake
             pipx install --force cmake==3.31
           fi
