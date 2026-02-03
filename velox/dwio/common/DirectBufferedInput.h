@@ -228,7 +228,6 @@ class DirectBufferedInput : public BufferedInput {
   void reset() override;
 
  protected:
-  // Some members are protected to allow custom extended buffered inputs.
   // Regions that are candidates for loading.
   std::vector<LoadRequest> requests_;
 
