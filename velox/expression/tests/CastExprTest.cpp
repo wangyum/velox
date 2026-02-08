@@ -2345,6 +2345,40 @@ TEST_F(CastExprTest, doubleToDecimal) {
       DECIMAL(38, 2),
       {NAN},
       "Cannot cast DOUBLE 'NaN' to DECIMAL(38, 2). The input value should be finite.");
+
+  // Regression test for double rounding bug: when converting double to decimal,
+  // intermediate rounding to preserve precision should not introduce errors.
+  // The value 75.0 * 0.7482 = 56.114999999999994884... < 56.115
+  // With HALF_UP rounding to 2 decimal places, it should round down to 56.11.
+  testCast(
+      makeFlatVector<double>({75.0 * 0.7482}),
+      makeFlatVector<int64_t>({5611}, DECIMAL(18, 2)));
+
+  // Test exact half value - should round up
+  testCast(
+      makeFlatVector<double>({56.115}),
+      makeFlatVector<int64_t>({5612}, DECIMAL(18, 2)));
+
+  // Test values near the half point
+  testCast(
+      makeFlatVector<double>({56.114, 56.116, -56.114, -56.116}),
+      makeFlatVector<int64_t>({5611, 5612, -5611, -5612}, DECIMAL(18, 2)));
+
+  // Test with different scales
+  testCast(
+      makeFlatVector<double>({75.0 * 0.7482, 75.0 * 0.7482}),
+      makeFlatVector<int64_t>({56115, 561}, DECIMAL(18, 3)));
+  testCast(
+      makeFlatVector<double>({75.0 * 0.7482}),
+      makeFlatVector<int64_t>({561}, DECIMAL(18, 1)));
+
+  // Test with smaller magnitude values
+  testCast(
+      makeFlatVector<double>({7.5 * 0.7482}),
+      makeFlatVector<int64_t>({561}, DECIMAL(10, 2)));
+  testCast(
+      makeFlatVector<double>({7.5 * 0.7482}),
+      makeFlatVector<int64_t>({5611}, DECIMAL(10, 3)));
 }
 
 TEST_F(CastExprTest, realToDecimal) {

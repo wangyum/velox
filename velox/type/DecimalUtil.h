@@ -250,9 +250,13 @@ class DecimalUtil {
     const auto integralValue = static_cast<uint128_t>(std::abs(value));
     const auto integralDigits =
         integralValue == 0 ? 0 : countDigits(integralValue);
-    const auto fractionDigits = std::max(digits - integralDigits, 0);
+    const auto availableFractionDigits = std::max(digits - integralDigits, 0);
+    // To avoid double rounding errors, we should not scale beyond the target
+    // scale. When target scale is smaller than available fraction digits,
+    // only scale to the target scale for a single rounding operation.
+    const auto fractionDigits = std::min(availableFractionDigits, scale);
 
-    // Scales up the input value with all the precise fractional digits kept.
+    // Scales up the input value with the appropriate fractional digits kept.
     // Convert value as long double type because 1) double * int128_t returns
     // int128_t and fractional digits are lost. 2) we could also convert the
     // int128_t value as double to avoid 'double * int128_t', but double
@@ -268,6 +272,7 @@ class DecimalUtil {
     }
     TOutput rescaledValue = result.value();
     if (scale > fractionDigits) {
+      // Need to scale up to reach the target scale
       bool isOverflow = __builtin_mul_overflow(
           rescaledValue,
           DecimalUtil::kPowersOfTen[scale - fractionDigits],
@@ -275,12 +280,15 @@ class DecimalUtil {
       if (isOverflow) {
         return Status::UserError("Result overflows.");
       }
-    } else {
+    } else if (scale < fractionDigits) {
+      // This branch should not be reached anymore with the fix above,
+      // but keep it for safety in case fractionDigits calculation changes
       const auto scalingFactor =
           DecimalUtil::kPowersOfTen[fractionDigits - scale];
       divideWithRoundUp<TOutput, TOutput, int128_t>(
           rescaledValue, rescaledValue, scalingFactor, false, 0, 0);
     }
+    // If scale == fractionDigits, no additional scaling needed
 
     if (!valueInPrecisionRange<TOutput>(rescaledValue, precision)) {
       return Status::UserError(

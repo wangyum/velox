@@ -484,6 +484,38 @@ TEST(DecimalTest, rescaleDouble) {
       INFINITY, DECIMAL(10, 2), "The input value should be finite.");
   assertRescaleDoubleFail(
       99999.99, DECIMAL(6, 4), "Result cannot fit in the given precision 6.");
+
+  // Test for double rounding bug fix: regression test for issue where
+  // intermediate rounding to preserve precision caused incorrect final result.
+  // The value 75.0 * 0.7482 = 56.114999999999994884... which is less than
+  // 56.115, so with HALF_UP rounding to 2 decimal places it should round
+  // down to 56.11, not up to 56.12.
+  assertRescaleDouble(75.0 * 0.7482, DECIMAL(18, 2), 5611);
+
+  // Test exact half value - should round up
+  assertRescaleDouble(56.115, DECIMAL(18, 2), 5612);
+
+  // Test values just below and above the half point
+  assertRescaleDouble(56.114, DECIMAL(18, 2), 5611);
+  assertRescaleDouble(56.116, DECIMAL(18, 2), 5612);
+
+  // Additional edge cases with different scales
+  assertRescaleDouble(75.0 * 0.7482, DECIMAL(18, 3), 56115);
+  assertRescaleDouble(75.0 * 0.7482, DECIMAL(18, 1), 561);
+
+  // Test negative values
+  assertRescaleDouble(-75.0 * 0.7482, DECIMAL(18, 2), -5611);
+  assertRescaleDouble(-56.115, DECIMAL(18, 2), -5612);
+
+  // Test with different multiplications that produce similar values
+  // Note: 1.5 * 37.41 = 56.114999... (not exactly 56.115)
+  assertRescaleDouble(1.5 * 37.41, DECIMAL(18, 2), 5611);
+  // 10.0 * 5.6115 = 56.115 exactly (should round up)
+  assertRescaleDouble(10.0 * 5.6115, DECIMAL(18, 2), 5612);
+
+  // Test smaller scale values
+  assertRescaleDouble(7.5 * 0.7482, DECIMAL(10, 2), 561);  // 5.6114999... -> 5.61
+  assertRescaleDouble(7.5 * 0.7482, DECIMAL(10, 3), 5611); // 5.6114999... -> 5.611
 }
 
 TEST(DecimalTest, rescaleReal) {
