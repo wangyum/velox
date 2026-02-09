@@ -594,6 +594,27 @@ TEST(DecimalTest, rescaleReal) {
       NAN, DECIMAL(10, 2), "The input value should be finite.");
   assertRescaleRealFail(
       INFINITY, DECIMAL(10, 2), "The input value should be finite.");
+
+  // Test for double rounding bug fix (same tests as rescaleDouble but for float)
+  // Note: float has less precision than double, so results may differ
+  // 75.0f * 0.7482f = 56.115001... (slightly > 56.115 due to float precision)
+  // so it rounds to 5612, unlike double which rounds to 5611
+  assertRescaleReal(75.0f * 0.7482f, DECIMAL(10, 2), 5612);
+
+  // Test exact half value - should round up
+  assertRescaleReal(56.115f, DECIMAL(10, 2), 5612);
+
+  // Test values just below and above the half point
+  assertRescaleReal(56.114f, DECIMAL(10, 2), 5611);
+  assertRescaleReal(56.116f, DECIMAL(10, 2), 5612);
+
+  // Test negative values
+  assertRescaleReal(-75.0f * 0.7482f, DECIMAL(10, 2), -5612);
+  assertRescaleReal(-56.115f, DECIMAL(10, 2), -5612);
+
+  // Test with different scales
+  assertRescaleReal(75.0f * 0.7482f, DECIMAL(10, 3), 56115);
+  assertRescaleReal(75.0f * 0.7482f, DECIMAL(10, 1), 561);
 }
 
 TEST(DecimalTest, maxStringViewSize) {
